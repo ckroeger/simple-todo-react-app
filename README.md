@@ -36,7 +36,7 @@ npm run dev
     * add css
 
 ## Task #2 - create a github-action to deploy app
-* create a github-action to publish the app on a github-page
+* ☑️ create a github-action to publish the app on a github-page
 
 ## VSCode Plugins
 
