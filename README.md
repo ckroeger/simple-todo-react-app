@@ -6,6 +6,8 @@ A simple TODO-APP developt in React
 ## Prequisites
 * Node 18 or above
 * React 18 or above
+* Vite
+* TypeScript
 
 ## Functional Requirements
 * list todos
@@ -20,6 +22,21 @@ A simple TODO-APP developt in React
 npm install
 npm run dev
 ```
+
+# Tasks
+
+## Task #1 - create a ToDoList Compnent
+* create a ToDoList Compnent
+  * Functions:
+    * add todo
+    * delete todo
+    * move todo up
+    * move todo down
+  * Styling
+    * add css
+
+## Task #2 - create a github-action to deploy app
+* create a github-action to publish the app on a github-page
 
 ## VSCode Plugins
 
