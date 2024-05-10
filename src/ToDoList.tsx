@@ -62,6 +62,19 @@ const ToDoList = () => {
         }
     }
 
+    function toggleAToDo(id: number): void {
+        const newToDos = todos.map(todo => {
+            if (todo.id === id) {
+                return {
+                    ...todo,
+                    done: !todo.done
+                };
+            }
+            return todo;
+        });
+        setTodos(newToDos);
+    }
+
     return (
         <>
             <div className='to-do-list'>
@@ -72,7 +85,8 @@ const ToDoList = () => {
             <ol>
                 {todos.map(todo =>
                     <li key={todo.id}>
-                        <span className='text'>{todo.text}</span>
+                        <span className={`text ${todo.done ? 'done' : ''}`}>{todo.text}</span>
+                        <button className='toggle-button' onClick={() => toggleAToDo(todo.id)} title='toggle done state'>☑️</button>
                         <button className='delete-button' onClick={() => deleteAToDo(todo.id)} title='delete'>🗑</button>
                         <button className='move-button' onClick={() => moveToDoUp(todo.id)} title='move up'>👆</button>
                         <button className='move-button' onClick={() => moveToDoDown(todo.id)} title=' move down'>👇</button>

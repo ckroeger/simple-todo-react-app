@@ -73,3 +73,9 @@ li {
 .text {
   flex: 1;
 }
+
+
+.done {
+  text-decoration: line-through;
+  color: hsla(0, 0%, 0%, 0.5);
+}
