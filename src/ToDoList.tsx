@@ -15,6 +15,7 @@ const ToDoList = () => {
     }
 
     function addAToDo() {
+        if(text.trim() === '') return;
         const newToDo = {
             id: todos.length,
             text: text,
