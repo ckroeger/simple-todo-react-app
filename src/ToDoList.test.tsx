@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import ToDoList from "./ToDoList";
 
 describe("ToDoList Component", () => {
@@ -45,7 +45,11 @@ describe("ToDoList Component", () => {
       target: { value: "Delete Me" },
     });
     fireEvent.click(screen.getByRole("button", { name: /add/i }));
-    fireEvent.click(screen.getByRole("button", { name: /delete task/i }));
+    const listItem = screen.getByRole("listitem", { name: /task: delete me/i });
+    const deleteButton = within(listItem).getByRole("button", {
+      name: /delete task/i,
+    });
+    fireEvent.click(deleteButton);
     expect(screen.queryByText("Delete Me")).not.toBeInTheDocument();
   });
 
@@ -55,10 +59,16 @@ describe("ToDoList Component", () => {
       target: { value: "Toggle Me" },
     });
     fireEvent.click(screen.getByRole("button", { name: /add/i }));
-    const toggleButton = screen.getByRole("button", { name: /mark as done/i });
+    const listItem = screen.getByRole("listitem", { name: /task: toggle me/i });
+    const toggleButton = within(listItem).getByRole("button", {
+      name: /mark as done/i,
+    });
     fireEvent.click(toggleButton);
     expect(screen.getByText("Toggle Me")).toHaveClass("done");
-    fireEvent.click(screen.getByRole("button", { name: /mark as not done/i }));
+    const toggleButtonAfter = within(listItem).getByRole("button", {
+      name: /mark as not done/i,
+    });
+    fireEvent.click(toggleButtonAfter);
     expect(screen.getByText("Toggle Me")).not.toHaveClass("done");
   });
 
@@ -74,21 +84,23 @@ describe("ToDoList Component", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: /add/i }));
     // Move second up
-    const moveUpButtons = screen.getAllByRole("button", {
+    const secondItem = screen.getByRole("listitem", { name: /task: second/i });
+    const moveUpButton = within(secondItem).getByRole("button", {
       name: /move task up/i,
     });
-    fireEvent.click(moveUpButtons[1]);
+    fireEvent.click(moveUpButton);
     const items = screen.getAllByRole("listitem");
-    expect(items[0]).toHaveTextContent("Second");
-    expect(items[1]).toHaveTextContent("First");
+    expect(within(items[0]).getByText("Second")).toBeInTheDocument();
+    expect(within(items[1]).getByText("First")).toBeInTheDocument();
     // Move first (now second) down
-    const moveDownButtons = screen.getAllByRole("button", {
+    const firstItem = screen.getByRole("listitem", { name: /task: second/i });
+    const moveDownButton = within(firstItem).getByRole("button", {
       name: /move task down/i,
     });
-    fireEvent.click(moveDownButtons[0]);
+    fireEvent.click(moveDownButton);
     const itemsAfter = screen.getAllByRole("listitem");
-    expect(itemsAfter[0]).toHaveTextContent("First");
-    expect(itemsAfter[1]).toHaveTextContent("Second");
+    expect(within(itemsAfter[0]).getByText("First")).toBeInTheDocument();
+    expect(within(itemsAfter[1]).getByText("Second")).toBeInTheDocument();
   });
 
   test("move up/down does nothing at boundaries", () => {
@@ -97,8 +109,11 @@ describe("ToDoList Component", () => {
       target: { value: "Only" },
     });
     fireEvent.click(screen.getByRole("button", { name: /add/i }));
-    const moveUpButton = screen.getByRole("button", { name: /move task up/i });
-    const moveDownButton = screen.getByRole("button", {
+    const listItem = screen.getByRole("listitem", { name: /task: only/i });
+    const moveUpButton = within(listItem).getByRole("button", {
+      name: /move task up/i,
+    });
+    const moveDownButton = within(listItem).getByRole("button", {
       name: /move task down/i,
     });
     fireEvent.click(moveUpButton);
