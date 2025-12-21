@@ -66,7 +66,7 @@ const ToDoList = () => {
       text: trimmedText,
       done: false,
     };
-    setTodos([...todos, newToDo]);
+    setTodos([newToDo, ...todos]);
     setText("");
   }, [text, todos]);
 
