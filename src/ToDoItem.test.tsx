@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ToDoItem from "./ToDoItem";
 
 describe("ToDoItem Component", () => {
@@ -130,6 +130,17 @@ describe("ToDoItem Component", () => {
     expect(screen.getByLabelText("Cancel edit")).toBeInTheDocument();
   });
 
+  test("enters edit mode when text is double-clicked", () => {
+    render(
+      <ToDoItem todo={mockTodo} index={0} totalCount={1} {...mockHandlers} />
+    );
+    const textSpan = screen.getByText("Test Task");
+    fireEvent.doubleClick(textSpan);
+    expect(screen.getByLabelText("Edit task text")).toBeInTheDocument();
+    expect(screen.getByLabelText("Save edit")).toBeInTheDocument();
+    expect(screen.getByLabelText("Cancel edit")).toBeInTheDocument();
+  });
+
   test("calls onEdit when save button is clicked with new text", () => {
     render(
       <ToDoItem todo={mockTodo} index={0} totalCount={1} {...mockHandlers} />
@@ -204,5 +215,29 @@ describe("ToDoItem Component", () => {
     const listItem = screen.getByRole("listitem");
     fireEvent.keyDown(listItem, { key: "t" });
     expect(mockHandlers.onKeyDown).not.toHaveBeenCalled();
+  });
+
+  test("refocuses list item after saving edit", async () => {
+    render(
+      <ToDoItem todo={mockTodo} index={0} totalCount={1} {...mockHandlers} />
+    );
+    const listItem = screen.getByRole("listitem");
+    fireEvent.click(screen.getByLabelText("Edit task"));
+    const input = screen.getByLabelText("Edit task text");
+    fireEvent.change(input, { target: { value: "Updated Task" } });
+    fireEvent.click(screen.getByLabelText("Save edit"));
+    await waitFor(() => expect(listItem).toHaveFocus());
+  });
+
+  test("refocuses list item after canceling edit", async () => {
+    render(
+      <ToDoItem todo={mockTodo} index={0} totalCount={1} {...mockHandlers} />
+    );
+    const listItem = screen.getByRole("listitem");
+    fireEvent.click(screen.getByLabelText("Edit task"));
+    const input = screen.getByLabelText("Edit task text");
+    fireEvent.change(input, { target: { value: "Updated Task" } });
+    fireEvent.click(screen.getByLabelText("Cancel edit"));
+    await waitFor(() => expect(listItem).toHaveFocus());
   });
 });

@@ -32,6 +32,7 @@ const ToDoItem: React.FC<ToDoItemProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(todo.text);
   const inputRef = useRef<HTMLInputElement>(null);
+  const listItemRef = useRef<HTMLLIElement>(null);
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -51,17 +52,20 @@ const ToDoItem: React.FC<ToDoItemProps> = ({
       // Don't save empty text
       setIsEditing(false);
       setEditText(todo.text);
+      listItemRef.current?.focus();
       return;
     }
     if (trimmedText !== todo.text) {
       onEdit(todo.id, trimmedText);
     }
     setIsEditing(false);
+    listItemRef.current?.focus();
   };
 
   const handleCancelEdit = () => {
     setIsEditing(false);
     setEditText(todo.text);
+    listItemRef.current?.focus();
   };
 
   const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -76,6 +80,7 @@ const ToDoItem: React.FC<ToDoItemProps> = ({
 
   return (
     <li
+      ref={listItemRef}
       tabIndex={0}
       onKeyDown={(e) => !isEditing && onKeyDown(e, todo.id)}
       aria-label={`Task: ${todo.text}`}
@@ -94,7 +99,7 @@ const ToDoItem: React.FC<ToDoItemProps> = ({
           <button
             className="add-button"
             onClick={handleSaveEdit}
-            title="save edit"
+            title="save edit (Enter)"
             aria-label="Save edit"
           >
             ✅
@@ -102,7 +107,7 @@ const ToDoItem: React.FC<ToDoItemProps> = ({
           <button
             className="delete-button"
             onClick={handleCancelEdit}
-            title="cancel edit"
+            title="cancel edit (Esc)"
             aria-label="Cancel edit"
           >
             ❌
@@ -110,7 +115,7 @@ const ToDoItem: React.FC<ToDoItemProps> = ({
         </>
       ) : (
         <>
-          <span className={`text ${todo.done ? "done" : ""}`}>{todo.text}</span>
+          <span onDoubleClick={handleEditClick} className={`text ${todo.done ? "done" : ""}`}>{todo.text}</span>
           <button
             className="move-button"
             onClick={handleEditClick}
@@ -122,7 +127,7 @@ const ToDoItem: React.FC<ToDoItemProps> = ({
           <button
             className="toggle-button"
             onClick={() => onToggle(todo.id)}
-            title="toggle done state"
+            title="toggle done state (T)"
             aria-label={todo.done ? "Mark as not done" : "Mark as done"}
           >
             ☑️
@@ -130,7 +135,7 @@ const ToDoItem: React.FC<ToDoItemProps> = ({
           <button
             className="delete-button"
             onClick={() => onDelete(todo.id)}
-            title="delete"
+            title="delete (D)"
             aria-label="Delete task"
           >
             🗑
@@ -138,7 +143,7 @@ const ToDoItem: React.FC<ToDoItemProps> = ({
           <button
             className="move-button"
             onClick={() => onMoveUp(todo.id)}
-            title="move up"
+            title="move up (ArrowUp)"
             aria-label="Move task up"
             disabled={index === 0}
           >
@@ -147,7 +152,7 @@ const ToDoItem: React.FC<ToDoItemProps> = ({
           <button
             className="move-button"
             onClick={() => onMoveDown(todo.id)}
-            title=" move down"
+            title="move down (ArrowDown)"
             aria-label="Move task down"
             disabled={index === totalCount - 1}
           >
