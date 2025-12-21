@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
+import ToDoItem from "./ToDoItem";
 
 interface ToDo {
   id: string;
@@ -168,50 +169,17 @@ const ToDoList = () => {
       </div>
       <ol>
         {todos.map((todo, index) => (
-          <li
+          <ToDoItem
             key={todo.id}
-            tabIndex={0}
-            onKeyDown={(e) => handleTaskKeyDown(e, todo.id)}
-            aria-label={`Task: ${todo.text}`}
-          >
-            <span className={`text ${todo.done ? "done" : ""}`}>
-              {todo.text}
-            </span>
-            <button
-              className="toggle-button"
-              onClick={() => toggleAToDo(todo.id)}
-              title="toggle done state"
-              aria-label={todo.done ? "Mark as not done" : "Mark as done"}
-            >
-              ☑️
-            </button>
-            <button
-              className="delete-button"
-              onClick={() => deleteAToDo(todo.id)}
-              title="delete"
-              aria-label="Delete task"
-            >
-              🗑
-            </button>
-            <button
-              className="move-button"
-              onClick={() => moveToDoUp(todo.id)}
-              title="move up"
-              aria-label="Move task up"
-              disabled={index === 0}
-            >
-              👆
-            </button>
-            <button
-              className="move-button"
-              onClick={() => moveToDoDown(todo.id)}
-              title=" move down"
-              aria-label="Move task down"
-              disabled={index === todos.length - 1}
-            >
-              👇
-            </button>
-          </li>
+            todo={todo}
+            index={index}
+            totalCount={todos.length}
+            onToggle={toggleAToDo}
+            onDelete={deleteAToDo}
+            onMoveUp={moveToDoUp}
+            onMoveDown={moveToDoDown}
+            onKeyDown={handleTaskKeyDown}
+          />
         ))}
       </ol>
     </>
