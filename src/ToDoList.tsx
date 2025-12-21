@@ -79,6 +79,31 @@ const ToDoList = () => {
     [todos]
   );
 
+  const editAToDo = useCallback(
+    (id: string, newText: string) => {
+      const trimmedText = newText.trim();
+      if (trimmedText === "") return;
+      
+      // Check if new text is duplicate with another todo (excluding current one)
+      const isDuplicate = todos.some(
+        (todo) => todo.id !== id && todo.text.trim().toLowerCase() === trimmedText.toLowerCase()
+      );
+      if (isDuplicate) return;
+
+      const newToDos = todos.map((todo) => {
+        if (todo.id === id) {
+          return {
+            ...todo,
+            text: trimmedText,
+          };
+        }
+        return todo;
+      });
+      setTodos(newToDos);
+    },
+    [todos]
+  );
+
   const moveToDoUp = useCallback(
     (id: string) => {
       const index = todos.findIndex((todo) => todo.id === id);
@@ -176,6 +201,7 @@ const ToDoList = () => {
             totalCount={todos.length}
             onToggle={toggleAToDo}
             onDelete={deleteAToDo}
+            onEdit={editAToDo}
             onMoveUp={moveToDoUp}
             onMoveDown={moveToDoDown}
             onKeyDown={handleTaskKeyDown}

@@ -278,4 +278,104 @@ describe("ToDoList Component", () => {
     expect(within(finalItems[1]).getByText("Third")).toBeInTheDocument();
     expect(within(finalItems[2]).getByText("Second")).toBeInTheDocument();
   });
+
+  test("can edit a todo", () => {
+    render(<ToDoList />);
+    fireEvent.change(screen.getByPlaceholderText(/enter a task/i), {
+      target: { value: "Original Task" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /add/i }));
+    
+    // Click edit button
+    const listItem = screen.getByRole("listitem");
+    const editButton = within(listItem).getByRole("button", {
+      name: /edit task/i,
+    });
+    fireEvent.click(editButton);
+    
+    // Change the text and save
+    const input = screen.getByLabelText("Edit task text");
+    fireEvent.change(input, { target: { value: "Updated Task" } });
+    const saveButton = screen.getByLabelText("Save edit");
+    fireEvent.click(saveButton);
+    
+    expect(screen.getByText("Updated Task")).toBeInTheDocument();
+    expect(screen.queryByText("Original Task")).not.toBeInTheDocument();
+  });
+
+  test("prevents editing to duplicate todo name", () => {
+    render(<ToDoList />);
+    // Add two todos
+    fireEvent.change(screen.getByPlaceholderText(/enter a task/i), {
+      target: { value: "Task One" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /add/i }));
+    fireEvent.change(screen.getByPlaceholderText(/enter a task/i), {
+      target: { value: "Task Two" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /add/i }));
+    
+    // Try to edit second task to match first task name
+    const items = screen.getAllByRole("listitem");
+    const editButton = within(items[0]).getByRole("button", {
+      name: /edit task/i,
+    });
+    fireEvent.click(editButton);
+    
+    const input = screen.getByLabelText("Edit task text");
+    fireEvent.change(input, { target: { value: "Task One" } });
+    const saveButton = screen.getByLabelText("Save edit");
+    fireEvent.click(saveButton);
+    
+    // Should still have both tasks with original names
+    expect(screen.getByText("Task Two")).toBeInTheDocument();
+    expect(screen.getAllByText("Task One")).toHaveLength(1);
+  });
+
+  test("prevents editing to empty text", () => {
+    render(<ToDoList />);
+    fireEvent.change(screen.getByPlaceholderText(/enter a task/i), {
+      target: { value: "Original Task" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /add/i }));
+    
+    const listItem = screen.getByRole("listitem");
+    const editButton = within(listItem).getByRole("button", {
+      name: /edit task/i,
+    });
+    fireEvent.click(editButton);
+    
+    const input = screen.getByLabelText("Edit task text");
+    fireEvent.change(input, { target: { value: "   " } });
+    const saveButton = screen.getByLabelText("Save edit");
+    fireEvent.click(saveButton);
+    
+    // Should still have original text
+    expect(screen.getByText("Original Task")).toBeInTheDocument();
+  });
+
+  test("persists edited todos to localStorage", () => {
+    render(<ToDoList />);
+    fireEvent.change(screen.getByPlaceholderText(/enter a task/i), {
+      target: { value: "Original Task" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /add/i }));
+    
+    const listItem = screen.getByRole("listitem");
+    const editButton = within(listItem).getByRole("button", {
+      name: /edit task/i,
+    });
+    fireEvent.click(editButton);
+    
+    const input = screen.getByLabelText("Edit task text");
+    fireEvent.change(input, { target: { value: "Updated Task" } });
+    const saveButton = screen.getByLabelText("Save edit");
+    fireEvent.click(saveButton);
+    
+    const stored = localStorage.getItem("todos");
+    expect(stored).toBeTruthy();
+    const parsed = JSON.parse(stored!);
+    expect(parsed).toHaveLength(1);
+    expect(parsed[0].text).toBe("Updated Task");
+  });
 });

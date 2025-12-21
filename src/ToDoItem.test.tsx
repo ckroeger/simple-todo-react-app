@@ -10,6 +10,7 @@ describe("ToDoItem Component", () => {
   };
 
   const mockHandlers = {
+    onEdit: vi.fn(),
     onToggle: vi.fn(),
     onDelete: vi.fn(),
     onMoveUp: vi.fn(),
@@ -110,5 +111,98 @@ describe("ToDoItem Component", () => {
     );
     const listItem = screen.getByRole("listitem");
     expect(listItem).toHaveAttribute("tabIndex", "0");
+  });
+
+  test("renders edit button", () => {
+    render(
+      <ToDoItem todo={mockTodo} index={0} totalCount={1} {...mockHandlers} />
+    );
+    expect(screen.getByLabelText("Edit task")).toBeInTheDocument();
+  });
+
+  test("enters edit mode when edit button is clicked", () => {
+    render(
+      <ToDoItem todo={mockTodo} index={0} totalCount={1} {...mockHandlers} />
+    );
+    fireEvent.click(screen.getByLabelText("Edit task"));
+    expect(screen.getByLabelText("Edit task text")).toBeInTheDocument();
+    expect(screen.getByLabelText("Save edit")).toBeInTheDocument();
+    expect(screen.getByLabelText("Cancel edit")).toBeInTheDocument();
+  });
+
+  test("calls onEdit when save button is clicked with new text", () => {
+    render(
+      <ToDoItem todo={mockTodo} index={0} totalCount={1} {...mockHandlers} />
+    );
+    fireEvent.click(screen.getByLabelText("Edit task"));
+    const input = screen.getByLabelText("Edit task text");
+    fireEvent.change(input, { target: { value: "Updated Task" } });
+    fireEvent.click(screen.getByLabelText("Save edit"));
+    expect(mockHandlers.onEdit).toHaveBeenCalledWith("1", "Updated Task");
+  });
+
+  test("cancels edit mode when cancel button is clicked", () => {
+    render(
+      <ToDoItem todo={mockTodo} index={0} totalCount={1} {...mockHandlers} />
+    );
+    fireEvent.click(screen.getByLabelText("Edit task"));
+    const input = screen.getByLabelText("Edit task text");
+    fireEvent.change(input, { target: { value: "Updated Task" } });
+    fireEvent.click(screen.getByLabelText("Cancel edit"));
+    expect(mockHandlers.onEdit).not.toHaveBeenCalled();
+    expect(screen.getByText("Test Task")).toBeInTheDocument();
+  });
+
+  test("saves edit when Enter key is pressed", () => {
+    render(
+      <ToDoItem todo={mockTodo} index={0} totalCount={1} {...mockHandlers} />
+    );
+    fireEvent.click(screen.getByLabelText("Edit task"));
+    const input = screen.getByLabelText("Edit task text");
+    fireEvent.change(input, { target: { value: "Updated Task" } });
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(mockHandlers.onEdit).toHaveBeenCalledWith("1", "Updated Task");
+  });
+
+  test("cancels edit when Escape key is pressed", () => {
+    render(
+      <ToDoItem todo={mockTodo} index={0} totalCount={1} {...mockHandlers} />
+    );
+    fireEvent.click(screen.getByLabelText("Edit task"));
+    const input = screen.getByLabelText("Edit task text");
+    fireEvent.change(input, { target: { value: "Updated Task" } });
+    fireEvent.keyDown(input, { key: "Escape" });
+    expect(mockHandlers.onEdit).not.toHaveBeenCalled();
+    expect(screen.getByText("Test Task")).toBeInTheDocument();
+  });
+
+  test("does not call onEdit when saving empty text", () => {
+    render(
+      <ToDoItem todo={mockTodo} index={0} totalCount={1} {...mockHandlers} />
+    );
+    fireEvent.click(screen.getByLabelText("Edit task"));
+    const input = screen.getByLabelText("Edit task text");
+    fireEvent.change(input, { target: { value: "   " } });
+    fireEvent.click(screen.getByLabelText("Save edit"));
+    expect(mockHandlers.onEdit).not.toHaveBeenCalled();
+  });
+
+  test("does not call onEdit when text is unchanged", () => {
+    render(
+      <ToDoItem todo={mockTodo} index={0} totalCount={1} {...mockHandlers} />
+    );
+    fireEvent.click(screen.getByLabelText("Edit task"));
+    fireEvent.click(screen.getByLabelText("Save edit"));
+    expect(mockHandlers.onEdit).not.toHaveBeenCalled();
+  });
+
+  test("disables keyboard shortcuts while in edit mode", () => {
+    render(
+      <ToDoItem todo={mockTodo} index={0} totalCount={1} {...mockHandlers} />
+    );
+    fireEvent.click(screen.getByLabelText("Edit task"));
+    const listItem = screen.getByRole("listitem");
+    fireEvent.keyDown(listItem, { key: "t" });
+    expect(mockHandlers.onKeyDown).not.toHaveBeenCalled();
   });
 });
