@@ -16,10 +16,16 @@ const ToDoList = () => {
   }
 
   function addAToDo() {
-    if (text.trim() === "") return;
+    const trimmedText = text.trim();
+    if (trimmedText === "") return;
+    // Prevent adding duplicate tasks (case-insensitive, trimmed)
+    const isDuplicate = todos.some(
+      (todo) => todo.text.trim().toLowerCase() === trimmedText.toLowerCase()
+    );
+    if (isDuplicate) return;
     const newToDo = {
       id: uuidv4(),
-      text: text,
+      text: trimmedText,
       done: false,
     };
     setTodos([...todos, newToDo]);
