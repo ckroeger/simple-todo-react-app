@@ -89,3 +89,19 @@ button:disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }
+
+.edit-input {
+  flex: 1;
+  font-size: 1.6rem;
+  padding: 0.5rem;
+  border: 2px solid hsl(207, 90%, 64%);
+  border-radius: 5px;
+  color: hsla(0, 0%, 0%, 0.8);
+  background-color: hsl(0, 0%, 100%);
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: hsl(207, 90%, 54%);
+  box-shadow: 0 0 5px hsla(207, 90%, 64%, 0.5);
+}
