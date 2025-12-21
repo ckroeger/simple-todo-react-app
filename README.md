@@ -1,5 +1,8 @@
 # simple-todo-react-app
 
+[![Tests](https://github.com/ckroeger/simple-todo-react-app/actions/workflows/test.yml/badge.svg)](https://github.com/ckroeger/simple-todo-react-app/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/ckroeger/simple-todo-react-app/branch/solution/graph/badge.svg)](https://codecov.io/gh/ckroeger/simple-todo-react-app)
+
 A simple TODO-APP developt in React
 
 ![](src/assets/react.svg)
