@@ -149,7 +149,7 @@ const ToDoList = () => {
         </button>
       </div>
       <ol>
-        {todos.map((todo) => (
+        {todos.map((todo, index) => (
           <li
             key={todo.id}
             tabIndex={0}
@@ -180,6 +180,7 @@ const ToDoList = () => {
               onClick={() => moveToDoUp(todo.id)}
               title="move up"
               aria-label="Move task up"
+              disabled={index === 0}
             >
               👆
             </button>
@@ -188,6 +189,7 @@ const ToDoList = () => {
               onClick={() => moveToDoDown(todo.id)}
               title=" move down"
               aria-label="Move task down"
+              disabled={index === todos.length - 1}
             >
               👇
             </button>

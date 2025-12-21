@@ -74,8 +74,18 @@ li {
   flex: 1;
 }
 
-
 .done {
   text-decoration: line-through;
   color: hsla(0, 0%, 0%, 0.5);
+}
+
+.text.done {
+  text-decoration: line-through;
+  opacity: 0.6;
+  color: #888;
+}
+
+button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
