@@ -75,14 +75,16 @@ const ToDoList = () => {
     <>
       <div className="to-do-list">
         <h1>📋 Todo List ☑️</h1>
+        <label htmlFor="todo-input">Add a new task:</label>
         <input
+          id="todo-input"
           type="text"
           value={text}
           onChange={handleInputChange}
           onKeyDown={handleEnterKey}
           placeholder="Enter a task..."
         />
-        <button className="add-button" onClick={addAToDo}>
+        <button className="add-button" onClick={addAToDo} aria-label="Add task">
           ➕ Add
         </button>
       </div>
@@ -96,6 +98,7 @@ const ToDoList = () => {
               className="toggle-button"
               onClick={() => toggleAToDo(todo.id)}
               title="toggle done state"
+              aria-label={todo.done ? "Mark as not done" : "Mark as done"}
             >
               ☑️
             </button>
@@ -103,6 +106,7 @@ const ToDoList = () => {
               className="delete-button"
               onClick={() => deleteAToDo(todo.id)}
               title="delete"
+              aria-label="Delete task"
             >
               🗑
             </button>
@@ -110,6 +114,7 @@ const ToDoList = () => {
               className="move-button"
               onClick={() => moveToDoUp(todo.id)}
               title="move up"
+              aria-label="Move task up"
             >
               👆
             </button>
@@ -117,6 +122,7 @@ const ToDoList = () => {
               className="move-button"
               onClick={() => moveToDoDown(todo.id)}
               title=" move down"
+              aria-label="Move task down"
             >
               👇
             </button>
