@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 interface ToDo {
@@ -46,11 +46,14 @@ const ToDoList = () => {
     }
   }, [todos, isLoaded]);
 
-  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setText(e.target.value);
-  }
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setText(e.target.value);
+    },
+    []
+  );
 
-  function addAToDo() {
+  const addAToDo = useCallback(() => {
     const trimmedText = text.trim();
     if (trimmedText === "") return;
     // Prevent adding duplicate tasks (case-insensitive, trimmed)
@@ -65,71 +68,86 @@ const ToDoList = () => {
     };
     setTodos([...todos, newToDo]);
     setText("");
-  }
+  }, [text, todos]);
 
-  function deleteAToDo(id: string) {
-    const filteredToDos = todos.filter((todo) => todo.id !== id);
-    setTodos(filteredToDos);
-  }
+  const deleteAToDo = useCallback(
+    (id: string) => {
+      const filteredToDos = todos.filter((todo) => todo.id !== id);
+      setTodos(filteredToDos);
+    },
+    [todos]
+  );
 
-  function moveToDoUp(id: string) {
-    const index = todos.findIndex((todo) => todo.id === id);
-    if (index === 0) return;
-    const newToDos = [...todos];
-    const temp = newToDos[index];
-    newToDos[index] = newToDos[index - 1];
-    newToDos[index - 1] = temp;
-    setTodos(newToDos);
-  }
+  const moveToDoUp = useCallback(
+    (id: string) => {
+      const index = todos.findIndex((todo) => todo.id === id);
+      if (index === 0) return;
+      const newToDos = [...todos];
+      const temp = newToDos[index];
+      newToDos[index] = newToDos[index - 1];
+      newToDos[index - 1] = temp;
+      setTodos(newToDos);
+    },
+    [todos]
+  );
 
-  function moveToDoDown(id: string) {
-    const index = todos.findIndex((todo) => todo.id === id);
-    if (index === todos.length - 1) return;
-    const newToDos = [...todos];
-    const temp = newToDos[index];
-    newToDos[index] = newToDos[index + 1];
-    newToDos[index + 1] = temp;
-    setTodos(newToDos);
-  }
+  const moveToDoDown = useCallback(
+    (id: string) => {
+      const index = todos.findIndex((todo) => todo.id === id);
+      if (index === todos.length - 1) return;
+      const newToDos = [...todos];
+      const temp = newToDos[index];
+      newToDos[index] = newToDos[index + 1];
+      newToDos[index + 1] = temp;
+      setTodos(newToDos);
+    },
+    [todos]
+  );
 
-  function handleEnterKey(e: React.KeyboardEvent<HTMLInputElement>) {
-    //console.log(e.key);
-    if (e.key === "Enter") {
-      addAToDo();
-    }
-  }
-
-  function toggleAToDo(id: string): void {
-    const newToDos = todos.map((todo) => {
-      if (todo.id === id) {
-        return {
-          ...todo,
-          done: !todo.done,
-        };
+  const handleEnterKey = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      //console.log(e.key);
+      if (e.key === "Enter") {
+        addAToDo();
       }
-      return todo;
-    });
-    setTodos(newToDos);
-  }
+    },
+    [addAToDo]
+  );
 
-  function handleTaskKeyDown(
-    e: React.KeyboardEvent<HTMLLIElement>,
-    id: string
-  ) {
-    if (e.key === "t" || e.key === "T") {
-      toggleAToDo(id);
-      e.preventDefault();
-    } else if (e.key === "d" || e.key === "D") {
-      deleteAToDo(id);
-      e.preventDefault();
-    } else if (e.key === "ArrowUp") {
-      moveToDoUp(id);
-      e.preventDefault();
-    } else if (e.key === "ArrowDown") {
-      moveToDoDown(id);
-      e.preventDefault();
-    }
-  }
+  const toggleAToDo = useCallback(
+    (id: string): void => {
+      const newToDos = todos.map((todo) => {
+        if (todo.id === id) {
+          return {
+            ...todo,
+            done: !todo.done,
+          };
+        }
+        return todo;
+      });
+      setTodos(newToDos);
+    },
+    [todos]
+  );
+
+  const handleTaskKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLLIElement>, id: string) => {
+      if (e.key === "t" || e.key === "T") {
+        toggleAToDo(id);
+        e.preventDefault();
+      } else if (e.key === "d" || e.key === "D") {
+        deleteAToDo(id);
+        e.preventDefault();
+      } else if (e.key === "ArrowUp") {
+        moveToDoUp(id);
+        e.preventDefault();
+      } else if (e.key === "ArrowDown") {
+        moveToDoDown(id);
+        e.preventDefault();
+      }
+    },
+    [toggleAToDo, deleteAToDo, moveToDoUp, moveToDoDown]
+  );
 
   return (
     <>
